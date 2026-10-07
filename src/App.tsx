@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Banner from './components/Banner';
@@ -18,12 +18,21 @@ import './App.css';
 
 export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Add is-scroll class to header once user scrolls down
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <div className="wrapper">
-      <div className="header_fixed is-scroll">
+      {/* Mobile fixed hamburger button (top-right, appears on scroll) */}
+      <div className={`header_fixed${scrolled ? ' is-scroll' : ''}`}>
         <button
-          className="menu-trigger hamburger"
+          className="menu-trigger"
           onClick={() => setSidebarOpen(true)}
           aria-label="選單"
           title="選單"
@@ -33,7 +42,13 @@ export default function App() {
       </div>
 
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <Header onMenuClick={() => setSidebarOpen(true)} />
+
+      {/* Header-wrap: on desktop this collapses to 0 height so banner shows behind fixed header */}
+      <div className="header-wrap">
+        <Header onMenuClick={() => setSidebarOpen(true)} scrolled={scrolled} />
+      </div>
+
+      {/* Banner — full width, sits behind fixed header on desktop */}
       <Banner />
 
       <main className="main">
