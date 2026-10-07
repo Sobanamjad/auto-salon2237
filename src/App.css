@@ -314,52 +314,72 @@ body.is-sidebar-open { overflow: hidden; }
 }
 
 /* ============================================================
-   BANNER  (full-width, behind fixed header on desktop)
+   BANNER  (Swiper-powered, matches swiper_cust_banner.js)
    ============================================================ */
 .banner-container {
   position: relative;
   width: 100%;
   background: #111;
   overflow: hidden;
+  /* On desktop, banner starts at top-0 so fixed header overlays it */
 }
-.banner {
-  position: relative;
+.swiper-banner {
   width: 100%;
   aspect-ratio: 1712 / 624;
   max-height: 620px;
-  overflow: hidden;
 }
-.banner-slide {
-  position: absolute; inset: 0;
-  opacity: 0; transition: opacity 1s ease;
+.swiper-banner .swiper-slide { height: auto; }
+.swiper-banner .idx-banner {
+  width: 100%; height: 100%;
+  display: flex;
 }
-.banner-slide.active { opacity: 1; }
-.banner-slide .idx-banner { width: 100%; height: 100%; }
-.banner-slide .idx-banner img { width: 100%; height: 100%; object-fit: cover; }
+.swiper-banner .idx-banner img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
 
-.banner-prev, .banner-next {
+/* Navigation arrows — styled like original site */
+.banner-prev,
+.banner-next {
   position: absolute; top: 50%; transform: translateY(-50%);
   z-index: 10;
-  background: rgba(255,255,255,0.25); border: none; color: #fff;
-  font-size: 28px; line-height: 1;
   width: 44px; height: 44px; border-radius: 50%;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.25);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
   transition: background 0.2s;
+  /* Swiper sets --swiper-navigation-color, override here */
+  color: #fff;
+}
+.banner-prev::after,
+.banner-next::after {
+  font-family: swiper-icons, serif;
+  font-size: 18px;
+  color: #fff;
+  font-weight: 700;
 }
 .banner-prev { left: 16px; }
 .banner-next { right: 16px; }
-.banner-prev:hover, .banner-next:hover { background: rgba(255,255,255,0.55); }
+.banner-prev:hover,
+.banner-next:hover { background: rgba(255,255,255,0.55); }
 
-.banner-dots {
-  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 8px; z-index: 10;
+/* Swiper disabled state */
+.banner-prev.swiper-button-disabled,
+.banner-next.swiper-button-disabled { opacity: 0.35; pointer-events: none; }
+
+/* Pagination dots */
+.swiper-banner .swiper-pagination {
+  bottom: 16px;
 }
-.dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  background: rgba(255,255,255,0.45); cursor: pointer;
+.swiper-banner .swiper-pagination-bullet {
+  width: 10px; height: 10px;
+  background: rgba(255,255,255,0.5);
+  opacity: 1;
   transition: background 0.3s;
 }
-.dot.active { background: #fff; }
+.swiper-banner .swiper-pagination-bullet-active {
+  background: #fff;
+}
 
 /* ============================================================
    SECTION COMMON
@@ -843,3 +863,77 @@ body.is-sidebar-open { overflow: hidden; }
   body { padding-bottom: 0; }
   .sticky-btmbar { display: none !important; }
 }
+
+/* ============================================================
+   ITEMSLIDE SWIPER  (albums section — swiper_cust_itemslide.js)
+   ============================================================ */
+.itemslide-container { position: relative; }
+
+/* Swiper override for itemslide */
+.swiper-itemslide { width: 100%; overflow: hidden; }
+.swiper-itemslide .swiper-slide { height: auto; }
+
+/* Navigation arrows — same class names as original JS */
+.itemslide-prev,
+.itemslide-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  border: 2px solid var(--color-light-one);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.itemslide-prev::after { content: '‹'; font-size: 20px; color: var(--color-one); font-weight: 700; }
+.itemslide-next::after { content: '›'; font-size: 20px; color: var(--color-one); font-weight: 700; }
+.itemslide-prev { left: -20px; }
+.itemslide-next { right: -20px; }
+.itemslide-prev:hover,
+.itemslide-next:hover { background: var(--color-one); border-color: var(--color-one); }
+.itemslide-prev:hover::after,
+.itemslide-next:hover::after { color: #fff; }
+.itemslide-prev.swiper-button-disabled,
+.itemslide-next.swiper-button-disabled { opacity: 0.3; pointer-events: none; }
+
+/* Album card inside swiper */
+.card_albums {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+}
+.card_albums:hover { transform: translateY(-4px); box-shadow: 0 8px 28px rgba(232,85,0,0.12); }
+.card_albums .card-photo { position: relative; }
+.card_albums .card-photo .item-fitimg { padding-top: 100%; }
+.card_albums .card-mask {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0);
+  transition: background 0.3s;
+}
+.card_albums:hover .card-mask { background: rgba(0,0,0,0.06); }
+.card_albums .card-body { padding: 12px 16px; }
+.card_albums .card-name-text { font-size: 14px; font-weight: 600; color: #333; display: block; margin-bottom: 8px; }
+.card_albums .card-name-text:hover { color: var(--color-one); }
+.card_albums .card-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 12px; color: var(--color-one);
+  padding: 4px 0;
+}
+.card_albums .card-btn:hover { text-decoration: underline; }
+.card_albums .row { display: flex; flex-direction: column; gap: 0; }
+.card_albums .g-3 { gap: 0; }
+
+/* ============================================================
+   FANCYBOX overrides (match site theme)
+   ============================================================ */
+.fancybox__container { --fancybox-accent-color: var(--color-one); }
+.fancybox__toolbar { background: rgba(0,0,0,0.6); }
+.carousel__button.is-close { background: var(--color-one); }

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useFancybox } from './hooks/useFancybox';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Banner from './components/Banner';
@@ -52,6 +53,9 @@ export default function App() {
 
   const openSidebar = useCallback(() => setSidebarOpen(true), []);
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
+
+  // Fancybox — binds to [data-fancybox] links (like fancybox.umd.js does)
+  useFancybox('[data-fancybox]');
 
   return (
     <div className="wrapper">

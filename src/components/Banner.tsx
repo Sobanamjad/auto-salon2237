@@ -1,59 +1,72 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import Swiper from 'swiper';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
 import { bannerImages } from '../data/content';
 
+// Swiper bundle CSS (swiper 11 structure)
+import 'swiper/swiper-bundle.css';
+
 export default function Banner() {
-  const [index, setIndex] = useState(0);
+  const swiperRef = useRef<Swiper | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setIndex((i) => (i + 1) % bannerImages.length);
-    }, 5000);
-    return () => clearInterval(t);
+    if (!containerRef.current) return;
+
+    // Exact settings from swiper_cust_banner.js
+    swiperRef.current = new Swiper(containerRef.current, {
+      modules: [Navigation, Pagination, Autoplay],
+      loop: true,
+      speed: 1000,
+      autoplay: {
+        delay: 4000,
+        disableOnInteraction: false,
+      },
+      // æ–°å¢žé€™å…©å€‹è¨­å®šï¼Œèƒ½å¢žåŠ ç©©å®šæ€§
+      observer: true,
+      observeParents: true,
+      navigation: {
+        nextEl: '.banner-next',
+        prevEl: '.banner-prev',
+      },
+      pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+      },
+    });
+
+    return () => {
+      swiperRef.current?.destroy(true, true);
+    };
   }, []);
 
   return (
     <div className="banner-container">
-      <div className="banner">
-        {bannerImages.map((img, i) => (
-          <div key={i} className={`banner-slide${i === index ? ' active' : ''}`}>
-            <div className="idx-banner">
-              <img
-                src={img.src}
-                alt={img.alt}
-                width="1712"
-                height="624"
-                fetchPriority={i === 0 ? 'high' : undefined}
-              />
-            </div>
-          </div>
-        ))}
-
-        <button
-          className="banner-prev"
-          onClick={() => setIndex((i) => (i - 1 + bannerImages.length) % bannerImages.length)}
-          aria-label="Previous slide"
-        >
-          ‹
-        </button>
-        <button
-          className="banner-next"
-          onClick={() => setIndex((i) => (i + 1) % bannerImages.length)}
-          aria-label="Next slide"
-        >
-          ›
-        </button>
-
-        <div className="banner-dots">
-          {bannerImages.map((_, i) => (
-            <span
-              key={i}
-              className={`dot${i === index ? ' active' : ''}`}
-              onClick={() => setIndex(i)}
-              role="button"
-              aria-label={`Go to slide ${i + 1}`}
-            />
+      {/* .swiper-banner matches the selector in swiper_cust_banner.js */}
+      <div className="swiper swiper-banner" ref={containerRef}>
+        <ul className="swiper-wrapper">
+          {bannerImages.map((img, i) => (
+            <li className="swiper-slide" key={i}>
+              <div className="idx-banner">
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  width="1712"
+                  height="624"
+                  fetchPriority={i === 0 ? 'high' : undefined}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                />
+              </div>
+            </li>
           ))}
-        </div>
+        </ul>
+
+        {/* Navigation arrows */}
+        <div className="banner-prev" />
+        <div className="banner-next" />
+
+        {/* Pagination dots */}
+        <div className="swiper-pagination" />
       </div>
     </div>
   );
