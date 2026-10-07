@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { menuItems } from '../data/content';
 
 interface Props {
@@ -6,24 +7,40 @@ interface Props {
 }
 
 export default function Sidebar({ open, onClose }: Props) {
+  // Close on Escape key
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
   return (
     <>
+      {/* Overlay — id="sidebar-overlay", class toggled by customize.js as is-active */}
       <div
         id="sidebar-overlay"
-        className={`sidebar-overlay${open ? ' show' : ''}`}
+        className={`sidebar-overlay${open ? ' is-active' : ''}`}
         onClick={onClose}
       />
-      <div id="sidebar" className={`sidebar${open ? ' show' : ''}`}>
-        <div className="sidebar-header">
-          <button id="sidebar-close" className="sidebar-close" onClick={onClose} aria-label="關閉">
+
+      {/* Sidebar panel — id="sidebar", class toggled as is-open */}
+      <div id="sidebar" className={`sidebar${open ? ' is-open' : ''}`}>
+
+        <div className="jsmtree-scroll-header sidebar-header">
+          <button
+            id="sidebar-close"
+            className="sidebar-close"
+            onClick={onClose}
+            aria-label="關閉"
+          >
             ✕
           </button>
         </div>
 
-        <div className="sidebar-body custom-scrollbar">
+        <div className="jsmtree-scroll sidebar-body custom-scrollbar">
           <div className="sidebar-section">
             <h3 className="sidebar-section-heading">選單</h3>
-            <ul className="sidebar_menu">
+            <ul className="jsmtree sidebar_menu">
               {menuItems.map((item) => (
                 <li key={item.href}>
                   <a href={item.href}>
@@ -36,7 +53,9 @@ export default function Sidebar({ open, onClose }: Props) {
           </div>
         </div>
 
-        <div className="sidebar-footer">© 中正大學企管校友會</div>
+        <div className="sidebar-footer">
+          © 中正大學企管校友會
+        </div>
       </div>
     </>
   );
